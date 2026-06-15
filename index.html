@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIA by PDI — App Redesign Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --plum:        #3D1C5C;
+  --plum-light:  #5A2D82;
+  --plum-dark:   #280E3E;
+  --green:       #4A7C6F;
+  --green-light: #6AA396;
+  --lavender:    #C4AEDE;
+  --sage:        #A8C5BD;
+  --cream:       #FAF8F5;
+  --white:       #FFFFFF;
+  --ink:         #1E1028;
+  --muted:       #7A6B8A;
+  --rule:        #E8E0F0;
+  --amber:       #B8794A;
+  --amber-bg:    #F7EEE2;
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: #EFE9F2; color: var(--ink); line-height: 1.6; font-size: 16px; }
+
+.serif { font-family: 'Playfair Display', serif; }
+.eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--green); }
+
+/* ============ TOP SWITCHER ============ */
+.switcher {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(250,248,245,0.96); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 28px; flex-wrap: wrap; gap: 14px;
+}
+.switcher-brand { display: flex; flex-direction: column; line-height: 1; gap: 2px; }
+.switcher-brand .pdi { font-size: 10px; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: var(--green); white-space: nowrap; }
+.switcher-brand .mia { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--plum); letter-spacing: 0.01em; line-height: 1; }
+.switcher-tabs { display: flex; gap: 6px; background: var(--white); padding: 5px; border-radius: 10px; border: 1px solid var(--rule); }
+.switcher-tab {
+  border: none; background: transparent; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted);
+  padding: 9px 18px; border-radius: 7px; transition: all 0.2s; letter-spacing: 0.01em;
+}
+.switcher-tab:hover { color: var(--plum); }
+.switcher-tab.active { background: var(--plum); color: var(--white); }
+.switcher-note { font-size: 11px; color: var(--muted); max-width: 230px; text-align: right; line-height: 1.4; }
+
+/* ============ SURFACE WRAPPERS ============ */
+.surface { display: none; }
+.surface.active { display: block; }
+.surface-intro { text-align: center; padding: 36px 24px 8px; max-width: 760px; margin: 0 auto; }
+.surface-intro h2 { font-family: 'Playfair Display', serif; font-size: 30px; color: var(--plum); font-weight: 700; margin-bottom: 8px; }
+.surface-intro h2 em { font-style: italic; color: var(--green); }
+.surface-intro p { font-size: 15px; color: var(--muted); font-weight: 300; line-height: 1.7; }
+
+/* SVG icon defaults */
+.ico { display: inline-block; vertical-align: middle; flex-shrink: 0; }
+.ico-stroke { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+/* ============================================================
+   FRONT DOOR (home)
+   ============================================================ */
+#surface-home { background: radial-gradient(1100px 560px at 72% -8%, rgba(196,174,222,0.32), transparent 60%), radial-gradient(820px 460px at -5% 105%, rgba(168,197,189,0.26), transparent 55%); }
+.home-hero { max-width: 1180px; margin: 0 auto; padding: 60px 40px 24px; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; }
+.home-wrist { display:flex; align-items:center; gap:10px; margin-bottom:20px; max-width:280px; }
+.home-wrist .wd { width:6px; height:6px; border-radius:50%; background:var(--green); }
+.home-wrist .wl { flex:1; height:2px; border-radius:2px; background:linear-gradient(90deg,var(--green),var(--lavender),transparent); }
+.home-copy .eyebrow { display:block; margin-bottom:14px; font-size:13px; letter-spacing:0.16em; }
+.home-copy h1 { font-family:'Playfair Display',serif; font-size:clamp(32px,4.4vw,56px); font-weight:700; color:var(--plum); line-height:1.08; margin-bottom:18px; }
+.home-copy h1 em { font-style:italic; color:var(--green); }
+.home-copy p { font-size:16px; color:var(--muted); font-weight:300; line-height:1.75; max-width:460px; margin-bottom:28px; }
+.home-actions { display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
+.btn-lg { background:var(--plum); color:#fff; border:none; padding:15px 30px; border-radius:7px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:9px; transition:background .2s, transform .15s; }
+.btn-lg:hover { background:var(--plum-light); transform:translateY(-1px); }
+.btn-lg-ghost { background:transparent; color:var(--green); border:1.5px solid var(--green); padding:14px 28px; border-radius:7px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; cursor:pointer; transition:all .2s; }
+.btn-lg-ghost:hover { background:var(--green); color:#fff; }
+.home-art { position:relative; display:flex; justify-content:center; align-items:center; }
+.hero-illus { width:100%; max-width:480px; height:auto; display:block; filter:drop-shadow(0 30px 60px rgba(61,28,92,0.16)); }
+/* view picker */
+.picker { max-width:1080px; margin:0 auto; padding:8px 40px 80px; display:none; }
+.picker.show { display:block; animation:fade .4s ease; }
+.picker-head { text-align:center; margin-bottom:26px; }
+.picker-head h2 { font-family:'Playfair Display',serif; font-size:28px; color:var(--plum); font-weight:700; margin-bottom:8px; }
+.picker-head h2 em { font-style:italic; color:var(--green); }
+.picker-head p { font-size:14px; color:var(--muted); }
+.picker-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+.pick-card { background:var(--white); border:1px solid var(--rule); border-top:3px solid var(--green); border-radius:14px; padding:24px; cursor:pointer; transition:box-shadow .2s, transform .15s, border-top-color .2s; display:flex; flex-direction:column; }
+.pick-card:hover { box-shadow:0 18px 44px rgba(61,28,92,0.12); transform:translateY(-3px); border-top-color:var(--plum); }
+.pick-ico { width:46px; height:46px; border-radius:12px; background:rgba(74,124,111,0.1); color:var(--green); display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
+.pick-card h3 { font-family:'Playfair Display',serif; font-size:19px; color:var(--plum); font-weight:700; margin-bottom:7px; }
+.pick-card p { font-size:13px; color:var(--muted); line-height:1.6; flex:1; margin-bottom:16px; }
+.pick-go { font-size:13px; font-weight:600; color:var(--green); display:inline-flex; align-items:center; gap:7px; }
+@media (max-width:900px){
+  .home-hero { grid-template-columns:1fr; gap:20px; padding-top:36px; }
+  .home-art { order:-1; max-width:340px; margin:0 auto; }
+  .picker-grid { grid-template-columns:1fr; }
+}
+
+/* ============================================================
+   SURFACE A — DOULA APP (mobile phone)
+   ============================================================ */
+.phone-stage { display: flex; justify-content: center; padding: 24px 16px 64px; }
+.phone {
+  width: 390px; min-height: 800px; background: var(--cream);
+  border-radius: 46px; padding: 12px;
+  border: 2px solid #D9CFE4;
+  box-shadow: 0 40px 90px rgba(61,28,92,0.28), inset 0 0 0 6px #fff;
+  position: relative; overflow: hidden;
+}
+.phone-inner { background: var(--cream); border-radius: 36px; overflow: hidden; min-height: 776px; display: flex; flex-direction: column; position: relative; }
+.phone-inner.dark { background: var(--plum-dark); }
+
+/* status + progress */
+.statusbar { display: flex; align-items: center; justify-content: space-between; padding: 10px 24px 4px; font-size: 12px; font-weight: 600; color: var(--plum); }
+.dark .statusbar { color: rgba(255,255,255,0.85); }
+.notch { width: 92px; height: 20px; background: #1E1028; border-radius: 0 0 14px 14px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); }
+.progress { display: flex; align-items: center; gap: 5px; padding: 8px 24px 6px; }
+.progress-seg { height: 3px; border-radius: 2px; flex: 1; background: var(--rule); transition: background 0.3s; }
+.progress-seg.on { background: var(--green); }
+.dark .progress-seg { background: rgba(255,255,255,0.15); }
+.dark .progress-seg.on { background: var(--green-light); }
+.progress-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--muted); }
+.dark .progress-label { color: rgba(255,255,255,0.55); }
+
+/* app header */
+.app-header { display: flex; align-items: center; justify-content: space-between; padding: 6px 22px 10px; }
+.app-header .back { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--rule); background: var(--white); display: flex; align-items: center; justify-content: center; color: var(--plum); cursor: pointer; }
+.dark .app-header .back { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); color: #fff; }
+.app-logo { text-align: center; line-height: 1.1; }
+.app-logo .mark { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--plum); }
+.app-logo .sub { font-size: 7.5px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--green); }
+.dark .app-logo .mark { color: #fff; }
+.dark .app-logo .sub { color: var(--sage); }
+
+/* screens */
+.screen { padding: 6px 22px 24px; flex: 1; display: none; }
+.screen.show { display: block; animation: fade 0.35s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.pill { display: inline-flex; align-items: center; gap: 7px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); background: rgba(74,124,111,0.08); padding: 6px 13px; border-radius: 20px; margin-bottom: 16px; }
+.pill .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+.screen h1 { font-family: 'Playfair Display', serif; font-size: 27px; font-weight: 700; color: var(--plum); line-height: 1.15; margin-bottom: 10px; }
+.screen h1 em { font-style: italic; color: var(--green); }
+.screen .lead { font-size: 14px; color: var(--muted); font-weight: 300; line-height: 1.6; margin-bottom: 20px; }
+.dark .screen h1 { color: #fff; }
+.dark .screen .lead { color: rgba(255,255,255,0.6); }
+
+.card-a { background: var(--white); border: 1px solid var(--rule); border-radius: 12px; padding: 18px; margin-bottom: 14px; }
+.card-a .label { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green); margin-bottom: 8px; display: block; }
+.card-a .helper { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+.inp { width: 100%; background: var(--cream); border: 1px solid var(--rule); border-radius: 7px; padding: 12px 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--ink); outline: none; transition: border-color 0.2s; }
+.inp:focus { border-color: var(--plum); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.valid { font-size: 12px; color: var(--green); font-weight: 600; margin-top: 7px; display: flex; align-items: center; gap: 5px; }
+.metarow { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--rule); font-size: 12px; color: var(--muted); }
+.metarow b { color: var(--plum); font-weight: 600; }
+
+.upload-btn { width: 100%; border: 1.5px dashed var(--green); background: rgba(74,124,111,0.04); color: var(--green); border-radius: 8px; padding: 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 9px; transition: background 0.2s; }
+.upload-btn:hover { background: rgba(74,124,111,0.09); }
+.verified-chip { display: flex; align-items: center; gap: 10px; background: rgba(74,124,111,0.1); border: 1px solid rgba(74,124,111,0.3); border-radius: 8px; padding: 12px 14px; }
+.verified-chip .vt { font-size: 13px; font-weight: 600; color: var(--green); }
+.verified-chip .vs { font-size: 11px; color: var(--muted); }
+
+.privacy { display: flex; align-items: flex-start; gap: 10px; background: rgba(61,28,92,0.04); border-radius: 10px; padding: 13px 15px; margin-bottom: 14px; }
+.privacy .ptxt { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.privacy .ptxt b { color: var(--plum); }
+
+.stats3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9px; margin-bottom: 16px; }
+.stat-mini { background: var(--white); border: 1px solid var(--rule); border-radius: 10px; padding: 13px 8px; text-align: center; }
+.stat-mini .n { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--plum); }
+.stat-mini .l { font-size: 9.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+
+.cta { width: 100%; background: var(--plum); color: var(--white); border: none; padding: 15px; border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.cta:hover { background: var(--plum-light); transform: translateY(-1px); }
+.cta.green { background: var(--green); } .cta.green:hover { background: var(--green-light); }
+.cta:disabled { background: var(--rule); color: var(--muted); cursor: default; transform: none; }
+.cta-ghost { width: 100%; background: transparent; color: var(--green); border: 1.5px solid var(--green); padding: 13px; border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+
+/* visit type seg */
+.seg3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9px; }
+.seg-opt { background: var(--white); border: 1.5px solid var(--rule); border-radius: 11px; padding: 16px 8px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.seg-opt:hover { border-color: var(--green-light); }
+.seg-opt.on { border-color: var(--green); background: rgba(74,124,111,0.06); }
+.seg-opt .si { color: var(--green); margin-bottom: 7px; }
+.seg-opt .sl { font-size: 12px; font-weight: 600; color: var(--plum); }
+
+.banner-plum { background: linear-gradient(135deg, var(--plum) 0%, #2A1240 100%); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+.banner-plum .bt { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sage); margin-bottom: 7px; }
+.banner-plum .bb { font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.55; }
+.banner-plum .bb b { color: #fff; }
+
+/* record screen */
+.toggle-online { display: flex; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); border-radius: 9px; padding: 4px; margin: 14px 0; }
+.toggle-online button { flex: 1; border: none; background: transparent; color: rgba(255,255,255,0.55); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; padding: 9px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: all 0.2s; }
+.toggle-online button.on { background: var(--green); color: #fff; }
+.dark .card-rec { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+.dark .card-rec .vlabel { display: flex; align-items: center; gap: 9px; color: #fff; font-size: 14px; font-weight: 600; }
+.dark .card-rec .vlabel .vi { color: var(--sage); }
+.dark .rec-helper { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.5; margin-top: 10px; }
+.dark .timelabel { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sage); margin-bottom: 6px; display: block; }
+.dark .inp-d { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); border-radius: 7px; padding: 11px 13px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: #fff; outline: none; }
+.mic-zone { text-align: center; padding: 18px 0 8px; }
+.mic-btn { width: 104px; height: 104px; border-radius: 50%; border: none; background: var(--green); color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 12px 36px rgba(74,124,111,0.4); transition: transform 0.2s; position: relative; }
+.mic-btn:hover { transform: scale(1.04); }
+.mic-btn.recording { background: #B8456A; box-shadow: 0 0 0 0 rgba(184,69,106,0.5); animation: pulse 1.6s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(184,69,106,0.45); } 70% { box-shadow: 0 0 0 22px rgba(184,69,106,0); } 100% { box-shadow: 0 0 0 0 rgba(184,69,106,0); } }
+.mic-caption { font-family: 'Playfair Display', serif; font-style: italic; font-size: 16px; color: #fff; margin-top: 18px; }
+.mic-help { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 8px; }
+
+/* review screen */
+.transcript { background: var(--white); border: 1px solid var(--rule); border-left: 3px solid var(--green); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+.transcript .th { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); margin-bottom: 8px; }
+.transcript .tb { font-size: 13.5px; color: var(--ink); line-height: 1.65; font-style: italic; }
+.milestone { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.milestone:last-child { border-bottom: none; }
+.ms-icon { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.ms-icon.ok { background: rgba(74,124,111,0.14); color: var(--green); }
+.ms-icon.err { background: rgba(184,69,106,0.12); color: #B8456A; }
+.ms-icon.pend { background: var(--rule); color: var(--muted); }
+.ms-body { flex: 1; }
+.ms-title { font-size: 14px; font-weight: 600; color: var(--plum); }
+.ms-hint { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin-top: 4px; }
+.ms-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); background: var(--rule); padding: 3px 8px; border-radius: 10px; }
+.fix-btn { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; color: var(--green); background: rgba(74,124,111,0.08); border: 1px solid rgba(74,124,111,0.25); border-radius: 7px; padding: 8px 12px; margin-top: 9px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+
+/* sign-off */
+.ready-chip { display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, var(--plum) 0%, #2A1240 100%); border-radius: 12px; padding: 16px 18px; margin-bottom: 16px; }
+.ready-chip .rci { width: 38px; height: 38px; border-radius: 9px; background: rgba(168,197,189,0.2); display: flex; align-items: center; justify-content: center; color: var(--sage); flex-shrink: 0; }
+.ready-chip .rt { font-size: 14px; font-weight: 600; color: #fff; }
+.ready-chip .rs { font-size: 11.5px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+.sigpad { background: var(--white); border: 1px solid var(--rule); border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+.sigpad .sl { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.sigpad .sl .lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); }
+.sigpad .sl .clr { font-size: 12px; color: var(--muted); cursor: pointer; }
+.sig-canvas { width: 100%; height: 110px; background: var(--cream); border: 1px dashed var(--rule); border-radius: 8px; cursor: crosshair; display: block; }
+.checklist { background: var(--white); border: 1px solid var(--rule); border-radius: 10px; padding: 6px 16px; margin-bottom: 16px; }
+.check-item { display: flex; align-items: center; gap: 11px; padding: 11px 0; border-bottom: 1px solid var(--rule); font-size: 13.5px; color: var(--plum); font-weight: 500; }
+.check-item:last-child { border-bottom: none; }
+.check-item .cb { width: 20px; height: 20px; border-radius: 6px; background: rgba(74,124,111,0.14); color: var(--green); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.check-item.off { color: var(--muted); } .check-item.off .cb { background: var(--rule); color: var(--muted); }
+
+/* demo nav */
+.demo-nav { display: flex; gap: 4px; padding: 10px 14px 14px; background: var(--cream); border-top: 1px solid var(--rule); }
+.dark .demo-nav { background: var(--plum-dark); border-top: 1px solid rgba(255,255,255,0.08); }
+.demo-nav button { flex: 1; border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 600; color: var(--muted); padding: 8px 2px; border-radius: 7px; cursor: pointer; transition: all 0.2s; }
+.demo-nav button.on { background: var(--plum); color: #fff; }
+.dark .demo-nav button { color: rgba(255,255,255,0.5); }
+.dark .demo-nav button.on { background: var(--green); color: #fff; }
+
+.pdi-foot { text-align: center; font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 4px 0 2px; }
+.dark .pdi-foot { color: rgba(255,255,255,0.4); }
+
+/* ============================================================
+   SURFACE B — ORG DASHBOARD (desktop)  &  C — MCO  shared
+   ============================================================ */
+.dash { max-width: 1240px; margin: 0 auto; padding: 16px; }
+.dash-shell { background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 30px 70px rgba(61,28,92,0.14); display: grid; grid-template-columns: 232px 1fr; min-height: 760px; }
+.sidebar { background: linear-gradient(180deg, var(--plum) 0%, var(--plum-dark) 100%); padding: 24px 18px; display: flex; flex-direction: column; }
+.sb-brand { display: flex; flex-direction: column; gap: 2px; margin-bottom: 22px; }
+.sb-brand .mia { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #fff; }
+.sb-brand .role { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--sage); }
+.sb-org { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 13px 14px; margin-bottom: 24px; }
+.sb-org .on { font-size: 14px; font-weight: 600; color: #fff; }
+.sb-org .od { font-size: 11px; color: var(--lavender); margin-top: 3px; }
+.sb-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.sb-nav button { display: flex; align-items: center; gap: 11px; border: none; background: transparent; color: rgba(255,255,255,0.62); font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500; padding: 11px 13px; border-radius: 8px; cursor: pointer; text-align: left; transition: all 0.2s; width: 100%; }
+.sb-nav button:hover { background: rgba(255,255,255,0.06); color: #fff; }
+.sb-nav button.on { background: rgba(255,255,255,0.12); color: #fff; }
+.sb-nav button .ni { color: var(--sage); display: flex; }
+.sb-nav button .badge { margin-left: auto; background: var(--green); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 10px; }
+.sb-foot { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 9px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4); line-height: 1.5; }
+
+.main { background: var(--cream); display: flex; flex-direction: column; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 20px 28px; border-bottom: 1px solid var(--rule); background: var(--white); }
+.topbar .tt { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--plum); }
+.topbar .td { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.topbar-right { display: flex; align-items: center; gap: 14px; }
+.alert-chip { display: flex; align-items: center; gap: 7px; background: var(--cream); border: 1px solid var(--rule); border-radius: 20px; padding: 7px 13px; font-size: 12px; font-weight: 600; color: var(--plum); position: relative; }
+.alert-chip .badge { background: #B8456A; color: #fff; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 9px; }
+.avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--plum); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 14px; }
+
+.panel-body { padding: 26px 28px; flex: 1; }
+.dtab { display: none; } .dtab.show { display: block; animation: fade 0.3s ease; }
+
+/* stat cards */
+.stat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: var(--white); border: 1px solid var(--rule); border-top: 3px solid var(--green); border-radius: 12px; padding: 18px; }
+.stat-card .sct { display: flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.stat-card .sci { color: var(--green); }
+.stat-card .scn { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; color: var(--plum); line-height: 1; }
+.stat-card .scs { font-size: 11.5px; color: var(--muted); margin-top: 7px; }
+.stat-card .scs.up { color: var(--green); font-weight: 600; }
+
+.grid-2 { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; margin-bottom: 18px; }
+.grid-2b { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.panel { background: var(--white); border: 1px solid var(--rule); border-radius: 12px; padding: 20px; }
+.panel h3 { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--plum); margin-bottom: 4px; }
+.panel .psub { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+
+.comp-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--rule); }
+.comp-row:last-child { border-bottom: none; }
+.comp-av { width: 32px; height: 32px; border-radius: 50%; background: rgba(74,124,111,0.12); color: var(--green); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; flex-shrink: 0; }
+.comp-name { font-size: 13px; font-weight: 500; color: var(--plum); width: 88px; }
+.comp-visits { font-size: 11px; color: var(--muted); width: 34px; }
+.comp-bar { flex: 1; height: 8px; background: var(--rule); border-radius: 5px; overflow: hidden; }
+.comp-fill { height: 100%; border-radius: 5px; }
+.comp-pct { font-size: 12px; font-weight: 600; color: var(--plum); width: 42px; text-align: right; }
+
+.alert-row { display: flex; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--rule); }
+.alert-row:last-child { border-bottom: none; }
+.alert-ico { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.alert-ico.warn { background: var(--amber-bg); color: var(--amber); }
+.alert-ico.ok { background: rgba(74,124,111,0.12); color: var(--green); }
+.alert-ico.info { background: rgba(196,174,222,0.2); color: var(--plum-light); }
+.alert-txt { font-size: 13px; color: var(--ink); line-height: 1.5; }
+.alert-time { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+/* bar chart */
+.vbreak { display: flex; flex-direction: column; gap: 13px; }
+.vbar-row { display: flex; align-items: center; gap: 12px; }
+.vbar-label { display: flex; align-items: center; gap: 8px; width: 110px; font-size: 13px; color: var(--plum); font-weight: 500; }
+.vbar-label .vi { color: var(--green); }
+.vbar-track { flex: 1; height: 22px; background: var(--cream); border-radius: 6px; overflow: hidden; }
+.vbar-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--green-light)); border-radius: 6px; display: flex; align-items: center; justify-content: flex-end; padding-right: 9px; color: #fff; font-size: 11px; font-weight: 700; }
+.code-block { background: linear-gradient(135deg, var(--plum) 0%, #2A1240 100%); border-radius: 10px; padding: 18px; margin-top: 6px; }
+.code-block .cbl { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sage); }
+.code-block .cbn { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: #fff; margin: 4px 0; }
+.code-block .cbd { font-size: 11.5px; color: rgba(255,255,255,0.6); line-height: 1.5; }
+
+/* tables */
+.dtable { width: 100%; border-collapse: collapse; }
+.dtable th { text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 11px 14px; border-bottom: 1px solid var(--rule); background: var(--cream); }
+.dtable td { padding: 14px; border-bottom: 1px solid var(--rule); font-size: 13.5px; color: var(--ink); }
+.dtable tr:last-child td { border-bottom: none; }
+.dtable tbody tr { transition: background 0.15s; }
+.dtable tbody tr:hover { background: rgba(74,124,111,0.03); }
+.cell-name { font-weight: 600; color: var(--plum); }
+.cell-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.statusdot { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; }
+.statusdot .sd { width: 8px; height: 8px; border-radius: 50%; }
+.sd-active { background: var(--green); } .sd-review { background: var(--amber); } .sd-inactive { background: #B9AEC6; }
+.pill-tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 12px; display: inline-block; }
+.pill-clear { background: rgba(74,124,111,0.1); color: var(--green); }
+.pill-pending { background: var(--amber-bg); color: var(--amber); }
+.section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.section-head h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--plum); }
+.section-head .sh-sub { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+.btn-sm { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; padding: 9px 16px; border-radius: 7px; border: none; cursor: pointer; }
+.btn-plum { background: var(--plum); color: #fff; } .btn-plum:hover { background: var(--plum-light); }
+.btn-out { background: transparent; color: var(--green); border: 1.5px solid var(--green); }
+
+/* queue cards */
+.queue-card { background: var(--white); border: 1px solid var(--rule); border-left: 3px solid var(--rule); border-radius: 12px; padding: 18px 20px; margin-bottom: 13px; }
+.queue-card.flagged { border-left-color: var(--amber); }
+.queue-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+.vid-chip { background: var(--plum); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; padding: 4px 10px; border-radius: 6px; }
+.queue-who { font-size: 14px; font-weight: 600; color: var(--plum); }
+.queue-who span { color: var(--muted); font-weight: 400; }
+.mini-badge { font-size: 11px; font-weight: 600; color: var(--muted); background: var(--cream); border: 1px solid var(--rule); padding: 3px 9px; border-radius: 10px; }
+.mini-badge.issue { background: var(--amber-bg); color: var(--amber); border-color: transparent; }
+.flag-strip { background: var(--amber-bg); color: var(--amber); font-size: 12px; font-weight: 600; padding: 9px 13px; border-radius: 8px; margin: 10px 0; display: flex; align-items: center; gap: 8px; }
+.queue-actions { display: flex; gap: 9px; margin-top: 12px; }
+
+/* billing */
+.billing-current { background: linear-gradient(135deg, var(--plum) 0%, var(--plum-dark) 100%); border-radius: 14px; padding: 26px; color: #fff; margin-bottom: 20px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center; }
+.billing-current .bcl { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sage); }
+.billing-current .bcp { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; margin: 4px 0; }
+.billing-current .bcm { font-size: 12.5px; color: rgba(255,255,255,0.65); }
+.billing-current .bcbig { font-family: 'Playfair Display', serif; font-size: 46px; font-weight: 700; line-height: 1; }
+.billing-bar { margin-top: 16px; }
+.billing-bar .bbl { font-size: 11.5px; color: rgba(255,255,255,0.7); display: flex; justify-content: space-between; margin-bottom: 6px; }
+.billing-bar .bbt { height: 7px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; }
+.billing-bar .bbf { height: 100%; background: var(--green-light); border-radius: 4px; }
+
+/* MCO specific */
+.mco-banner { background: linear-gradient(135deg, var(--green) 0%, #3A6357 100%); border-radius: 14px; padding: 22px 26px; color: #fff; margin-bottom: 22px; display: flex; align-items: center; gap: 18px; }
+.mco-banner .mbi { width: 46px; height: 46px; border-radius: 11px; background: rgba(255,255,255,0.16); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.mco-banner .mbt { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; }
+.mco-banner .mbd { font-size: 13px; color: rgba(255,255,255,0.82); line-height: 1.5; margin-top: 3px; }
+.sample-note { font-size: 11px; color: var(--muted); font-style: italic; display: inline-flex; align-items: center; gap: 6px; background: var(--white); border: 1px dashed var(--rule); padding: 5px 11px; border-radius: 8px; }
+.coverage-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.cov-card { background: var(--white); border: 1px solid var(--rule); border-radius: 11px; padding: 16px; }
+.cov-card .cvr { font-size: 13px; font-weight: 600; color: var(--plum); margin-bottom: 8px; display: flex; align-items: center; gap: 7px; }
+.cov-card .cvn { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--green); }
+.cov-card .cvl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.outcome-row { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--rule); }
+.outcome-row:last-child { border-bottom: none; }
+.outcome-label { font-size: 13.5px; color: var(--plum); font-weight: 500; flex: 1; }
+.outcome-bar { width: 180px; height: 9px; background: var(--rule); border-radius: 5px; overflow: hidden; }
+.outcome-fill { height: 100%; background: linear-gradient(90deg, var(--plum-light), var(--lavender)); border-radius: 5px; }
+.outcome-val { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--plum); width: 70px; text-align: right; }
+
+.audit-item { display: flex; align-items: flex-start; gap: 13px; padding: 15px 0; border-bottom: 1px solid var(--rule); }
+.audit-item:last-child { border-bottom: none; }
+.audit-ico { width: 32px; height: 32px; border-radius: 9px; background: rgba(74,124,111,0.12); color: var(--green); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.audit-body h4 { font-size: 14px; font-weight: 600; color: var(--plum); margin-bottom: 3px; }
+.audit-body p { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+.audit-status { margin-left: auto; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--green); align-self: center; white-space: nowrap; }
+
+@media (max-width: 1080px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .coverage-grid { grid-template-columns: repeat(2, 1fr); }
+  .grid-2, .grid-2b { grid-template-columns: 1fr; }
+  .dash-shell { grid-template-columns: 1fr; }
+  .sidebar { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .sb-nav { flex-direction: row; flex-wrap: wrap; }
+  .sb-foot { display: none; }
+}
+@media (max-width: 720px) {
+  .switcher-note { display: none; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== TOP SWITCHER ===================== -->
+<div class="switcher">
+  <div class="switcher-brand" style="cursor:pointer;" onclick="showSurface('home')" title="Back to front door">
+    <span class="pdi">Perinatal Documentation Integrity</span>
+    <span class="mia">MIA</span>
+  </div>
+  <div class="switcher-tabs">
+    <button class="switcher-tab active" data-surface="doula" onclick="showSurface('doula', this)">Doula App</button>
+    <button class="switcher-tab" data-surface="org" onclick="showSurface('org', this)">Organization Dashboard</button>
+    <button class="switcher-tab" data-surface="mco" onclick="showSurface('mco', this)">Payer Intelligence</button>
+  </div>
+  <div class="switcher-note">For demonstration purposes only — sample data is illustrative, not real records.</div>
+</div>
+
+<!-- ===================== FRONT DOOR (HOME) ===================== -->
+<section class="surface active" id="surface-home">
+  <div class="home-hero">
+    <div class="home-copy">
+      <div class="home-wrist"><span class="wd"></span><span class="wl"></span></div>
+      <span class="eyebrow">Maternal Integrity Assistant</span>
+      <h1>Built for the people who <em>show up</em> at birth.</h1>
+      <p>MIA turns what a birth worker says after a visit into a Medicaid-compliant record — and gives organizations and payers a verified view of the care delivered. Explore the working prototype.</p>
+      <div class="home-actions">
+        <button class="btn-lg" onclick="revealPicker()">View all <svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+        <button class="btn-lg-ghost" onclick="launchView('doula')">Open the doula app</button>
+      </div>
+    </div>
+    <div class="home-art">
+      <svg class="hero-illus" viewBox="0 0 520 480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-label="Illustration of a doula supporting a pregnant person, with a birthing ball, plant and dandelions">
+        <defs>
+          <linearGradient id="ballGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#CDB8E2"/><stop offset="1" stop-color="#B49AD2"/></linearGradient>
+          <linearGradient id="gownGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5A2D82"/><stop offset="1" stop-color="#3D1C5C"/></linearGradient>
+          <linearGradient id="topGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BBD4CC"/><stop offset="1" stop-color="#4A7C6F"/></linearGradient>
+          <g id="dande" stroke="#A8C5BD" stroke-width="1.3" stroke-linecap="round" fill="#A8C5BD">
+            <line x1="0" y1="2" x2="6" y2="30"/>
+            <line x1="0" y1="0" x2="0" y2="-12"/><circle cx="0" cy="-13" r="1.3"/>
+            <line x1="0" y1="0" x2="8" y2="-9"/><circle cx="9" cy="-10" r="1.3"/>
+            <line x1="0" y1="0" x2="12" y2="0"/><circle cx="13" cy="0" r="1.3"/>
+            <line x1="0" y1="0" x2="8" y2="9"/><circle cx="9" cy="10" r="1.3"/>
+            <line x1="0" y1="0" x2="-8" y2="-9"/><circle cx="-9" cy="-10" r="1.3"/>
+            <line x1="0" y1="0" x2="-12" y2="0"/><circle cx="-13" cy="0" r="1.3"/>
+            <line x1="0" y1="0" x2="-8" y2="9"/><circle cx="-9" cy="10" r="1.3"/>
+          </g>
+          <g id="spark" fill="#6AA396"><path d="M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6 Z"/></g>
+        </defs>
+        <circle cx="300" cy="220" r="206" fill="#C4AEDE" opacity="0.15"/>
+        <circle cx="300" cy="220" r="150" fill="#A8C5BD" opacity="0.12"/>
+        <use xlink:href="#dande" href="#dande" transform="translate(72,116) scale(1.1)"/>
+        <use xlink:href="#dande" href="#dande" transform="translate(470,150) scale(0.92)"/>
+        <use xlink:href="#dande" href="#dande" transform="translate(150,312) scale(0.8)"/>
+        <ellipse cx="300" cy="454" rx="196" ry="14" fill="#3D1C5C" opacity="0.05"/>
+        <circle cx="116" cy="374" r="76" fill="url(#ballGrad)"/>
+        <ellipse cx="92" cy="348" rx="26" ry="17" fill="#FFFFFF" opacity="0.18"/>
+        <path d="M236 432 C 232 404, 224 384, 210 372" stroke="#4A7C6F" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M236 432 C 240 408, 248 390, 262 380" stroke="#6AA396" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M236 434 C 236 408, 236 392, 236 376" stroke="#4A7C6F" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M210 372 C 198 360, 196 344, 204 332 C 216 340, 220 358, 214 374 Z" fill="#6AA396"/>
+        <path d="M262 380 C 276 372, 282 356, 278 342 C 264 348, 256 364, 258 380 Z" fill="#A8C5BD"/>
+        <path d="M236 376 C 230 360, 232 342, 244 332 C 250 348, 248 366, 240 378 Z" fill="#4A7C6F"/>
+        <path d="M218 430 h36 l-5 30 h-26 z" fill="#C4AEDE"/>
+        <rect x="214" y="424" width="44" height="9" rx="3" fill="#B49AD2"/>
+        <path d="M250 300 C 244 350, 234 406, 228 446" stroke="#C4AEDE" stroke-width="18" fill="none" stroke-linecap="round"/>
+        <path d="M270 300 C 274 350, 270 406, 264 446" stroke="#C4AEDE" stroke-width="18" fill="none" stroke-linecap="round"/>
+        <ellipse cx="224" cy="452" rx="16" ry="8" fill="#B49AD2"/>
+        <ellipse cx="266" cy="452" rx="16" ry="8" fill="#B49AD2"/>
+        <path d="M240 184 C 230 214, 234 270, 252 302 L 288 302 C 298 264, 294 214, 282 186 C 268 172, 252 172, 240 184 Z" fill="url(#topGrad)"/>
+        <rect x="246" y="150" width="15" height="20" rx="7" fill="#C68A63"/>
+        <circle cx="253" cy="148" r="24" fill="#C68A63"/>
+        <path d="M231 150 C 229 122, 279 122, 275 150 C 281 136, 273 118, 253 117 C 233 118, 225 136, 231 150 Z" fill="#2A1240"/>
+        <path d="M247 150 q3 3 6 0" stroke="#2A1240" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M259 150 q3 3 6 0" stroke="#2A1240" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <circle cx="246" cy="158" r="3" fill="#E29A86" opacity="0.5"/>
+        <path d="M322 306 C 318 354, 312 408, 309 448" stroke="#2A1240" stroke-width="19" fill="none" stroke-linecap="round"/>
+        <path d="M352 306 C 356 354, 358 408, 356 448" stroke="#2A1240" stroke-width="19" fill="none" stroke-linecap="round"/>
+        <ellipse cx="306" cy="454" rx="17" ry="8" fill="#C4AEDE"/>
+        <ellipse cx="358" cy="454" rx="17" ry="8" fill="#C4AEDE"/>
+        <path d="M326 176 C 312 198, 312 244, 320 304 L 360 304 C 372 282, 386 262, 386 238 C 386 212, 372 194, 360 186 C 350 178, 336 174, 326 176 Z" fill="url(#gownGrad)"/>
+        <path d="M338 224 C 338 252, 380 250, 380 228 C 380 212, 366 204, 356 204 C 346 204, 338 212, 338 224 Z" fill="#5A2D82" opacity="0.45"/>
+        <path d="M334 300 C 350 306, 372 300, 382 284" stroke="#8A5A3C" stroke-width="11" fill="none" stroke-linecap="round"/>
+        <rect x="332" y="150" width="16" height="22" rx="7" fill="#8A5A3C"/>
+        <circle cx="345" cy="147" r="26" fill="#8A5A3C"/>
+        <path d="M321 148 C 319 120, 371 120, 367 148 C 375 132, 367 114, 345 113 C 321 114, 313 132, 321 148 Z" fill="#2A1240"/>
+        <path d="M366 138 C 388 148, 390 182, 374 200 C 386 180, 382 156, 364 150 Z" fill="#2A1240"/>
+        <path d="M330 148 q3 3 6 0" stroke="#2A1240" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M342 148 q3 3 6 0" stroke="#2A1240" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <circle cx="338" cy="156" r="3.2" fill="#E29A86" opacity="0.5"/>
+        <path d="M262 196 C 290 178, 314 176, 332 190" stroke="url(#topGrad)" stroke-width="14" fill="none" stroke-linecap="round"/>
+        <circle cx="333" cy="191" r="8" fill="#C68A63"/>
+        <path d="M260 216 C 286 212, 308 220, 324 234" stroke="url(#topGrad)" stroke-width="13" fill="none" stroke-linecap="round"/>
+        <circle cx="325" cy="235" r="7" fill="#C68A63"/>
+        <use xlink:href="#spark" href="#spark" transform="translate(300,150)"/>
+        <use xlink:href="#spark" href="#spark" transform="translate(314,206) scale(0.8)"/>
+        <use xlink:href="#spark" href="#spark" transform="translate(290,180) scale(0.6)"/>
+      </svg>
+    </div>
+  </div>
+  <div class="picker" id="picker">
+    <div class="picker-head">
+      <h2>Choose a <em>view</em></h2>
+      <p>Three surfaces, one system. Pick where you want to start.</p>
+    </div>
+    <div class="picker-grid">
+      <div class="pick-card" onclick="launchView('doula')">
+        <div class="pick-ico"><svg class="ico ico-stroke" width="24" height="24" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg></div>
+        <h3>Doula App</h3>
+        <p>The five-step visit flow — speak a post-visit summary, MIA builds the state-ready record, then sign and export.</p>
+        <span class="pick-go">Open the app <svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </div>
+      <div class="pick-card" onclick="launchView('org')">
+        <div class="pick-ico"><svg class="ico ico-stroke" width="24" height="24" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></div>
+        <h3>Organization Dashboard</h3>
+        <p>How agencies and state partners manage doulas, clear records before billing, and export state-ready claims.</p>
+        <span class="pick-go">Open the dashboard <svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </div>
+      <div class="pick-card" onclick="launchView('mco')">
+        <div class="pick-ico"><svg class="ico ico-stroke" width="24" height="24" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3>Payer Intelligence</h3>
+        <p>What an MCO or Medicaid partner sees — de-identified verification, claims-readiness, outcomes, and compliance posture.</p>
+        <span class="pick-go">Open Payer Intelligence <svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SURFACE A: DOULA APP ===================== -->
+<section class="surface" id="surface-doula">
+  <div class="surface-intro">
+    <h2>The doula app, <em>rebuilt</em>.</h2>
+    <p>The five-step visit flow — Welcome, Visit Setup, Record, MIA Review, and Sign-Off — in the PDI visual language. Use the tabs at the bottom of the phone to move through the flow.</p>
+  </div>
+  <div class="phone-stage">
+    <div class="phone">
+      <div class="phone-inner" id="phoneInner">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>PDI</span><span>&#9679;&#9679;&#9679;</span></div>
+        <div class="progress" id="progressBar"></div>
+        <div class="app-header">
+          <div class="back" onclick="prevScreen()"><svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+          <div class="app-logo"><div class="sub">Perinatal Documentation Integrity</div><div class="mark">MIA</div></div>
+          <div class="back"><svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div>
+        </div>
+
+        <!-- SCREEN 1: WELCOME -->
+        <div class="screen show" data-screen="0">
+          <span class="pill"><span class="dot"></span>Protection · Clarity · Integrity</span>
+          <h1>Your work deserves<br>to be <em>paid.</em></h1>
+          <p class="lead">Set up once. MIA protects your records and your income — every visit.</p>
+          <div class="card-a">
+            <span class="label">Type 1 NPI</span>
+            <input class="inp" id="npiInput" placeholder="Enter 10-digit NPI" inputmode="numeric" maxlength="10" value="1234567890" oninput="checkNpi(this)">
+            <div class="valid" id="npiValid"><svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Looks good.</div>
+            <div class="metarow"><span>Taxonomy</span><b>374J00000X</b></div>
+          </div>
+          <div class="card-a">
+            <span class="label">Doctor's Referral</span>
+            <div class="verified-chip">
+              <svg class="ico ico-stroke" width="20" height="20" viewBox="0 0 24 24" style="color:var(--green)"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+              <div><div class="vt">Referral Verified</div><div class="vs">Billing Active · OB · CNM · MD · PA · NP on file</div></div>
+            </div>
+          </div>
+          <div class="privacy">
+            <svg class="ico ico-stroke" width="18" height="18" viewBox="0 0 24 24" style="color:var(--plum)"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+            <div class="ptxt">MIA only records a <b>post-visit voice summary</b> — audio never leaves this device unencrypted.</div>
+          </div>
+          <div class="stats3">
+            <div class="stat-mini"><div class="n">12</div><div class="l">Visits</div></div>
+            <div class="stat-mini"><div class="n">4</div><div class="l">Pending</div></div>
+            <div class="stat-mini"><div class="n">0</div><div class="l">Errors</div></div>
+          </div>
+          <button class="cta" onclick="nextScreen()">Welcome — let's get started <svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        </div>
+
+        <!-- SCREEN 2: VISIT SETUP -->
+        <div class="screen" data-screen="1">
+          <span class="pill"><span class="dot"></span>Step 02 · Visit Setup</span>
+          <h1>Who are you<br>seeing <em>today?</em></h1>
+          <p class="lead">Pick your client and visit type. MIA tailors the record to your state's billing requirements.</p>
+          <div class="card-a">
+            <span class="label">Client</span>
+            <select class="inp"><option>Amara Johnson · #101 — 38 wks · Prenatal</option><option>Sofia Martinez · #102 — PP 2wk · Postpartum</option><option>Kezia Nwosu · #103 — 34 wks · Prenatal</option></select>
+          </div>
+          <span class="label" style="display:block;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--green);margin-bottom:10px;">Visit Type</span>
+          <div class="seg3">
+            <div class="seg-opt on" onclick="pickSeg(this)"><div class="si"><svg class="ico ico-stroke" width="22" height="22" viewBox="0 0 24 24"><path d="M12 22c0-6 0-10 5-13M12 22c0-4-3-7-7-8"/><path d="M17 9c2-2 2-5 2-5s-3 0-5 2-2 5-2 5 3 0 5-2z"/></svg></div><div class="sl">Prenatal</div></div>
+            <div class="seg-opt" onclick="pickSeg(this)"><div class="si"><svg class="ico ico-stroke" width="22" height="22" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.5 2.3 7.1-6.3-4.6-6.3 4.6L7.9 14 2 9.4h7.6z"/></svg></div><div class="sl">Birth</div></div>
+            <div class="seg-opt" onclick="pickSeg(this)"><div class="si"><svg class="ico ico-stroke" width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 9c0-3 2-5 2-5s2 2 0 5M12 15c0 3-2 5-2 5s-2-2 0-5M15 12c3 0 5 2 5 2s-2 2-5 0M9 12c-3 0-5-2-5-2s2-2 5 0"/></svg></div><div class="sl">Postpartum</div></div>
+          </div>
+          <div class="banner-plum">
+            <div class="bt"><svg class="ico ico-stroke" width="15" height="15" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>National billing standard</div>
+            <div class="bb">A minimum of <b>60 minutes</b> per session is the national standard for doula reimbursement. Most states require this for any billable visit.</div>
+          </div>
+          <div class="privacy">
+            <svg class="ico ico-stroke" width="18" height="18" viewBox="0 0 24 24" style="color:var(--plum)"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+            <div class="ptxt">Post-visit summary only · Audio stays on device.</div>
+          </div>
+          <button class="cta" onclick="nextScreen()">Summarize the Visit <svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        </div>
+
+        <!-- SCREEN 3: RECORD (dark) -->
+        <div class="screen" data-screen="2">
+          <span class="pill" style="color:var(--sage);background:rgba(168,197,189,0.12)"><span class="dot" style="background:var(--sage)"></span>Step 03 · Post-Visit Summary</span>
+          <h1>Tell MIA about<br>the <em>visit.</em></h1>
+          <p class="lead">Amara Johnson · #101 — speak the way you'd debrief a colleague.</p>
+          <div class="toggle-online">
+            <button class="on" onclick="setOnline(true, this)"><svg class="ico ico-stroke" width="15" height="15" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0"/><circle cx="12" cy="19.5" r="1"/></svg>Online</button>
+            <button onclick="setOnline(false, this)"><svg class="ico ico-stroke" width="15" height="15" viewBox="0 0 24 24"><path d="M3 3l18 18M8.5 16a5 5 0 016.5-.6"/></svg>Offline</button>
+          </div>
+          <div class="card-rec">
+            <div class="vlabel"><span class="vi"><svg class="ico ico-stroke" width="18" height="18" viewBox="0 0 24 24"><path d="M12 22c0-6 0-10 5-13"/><path d="M17 9c2-2 2-5 2-5s-3 0-5 2-2 5-2 5 3 0 5-2z"/></svg></span>Prenatal Visit</div>
+            <div class="rec-helper" id="recHelper">Visit timestamps are captured automatically when you arrive and depart.</div>
+            <div id="offlineTimes" style="display:none;margin-top:14px;">
+              <div class="row2">
+                <div><span class="timelabel">Arrival Time</span><input class="inp-d" type="time" value="10:02"></div>
+                <div><span class="timelabel">Departure Time</span><input class="inp-d" type="time" value="12:10"></div>
+              </div>
+            </div>
+          </div>
+          <div class="mic-zone" id="micZone">
+            <button class="mic-btn" id="micBtn" onclick="toggleMic()">
+              <svg class="ico ico-stroke" width="34" height="34" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>
+            </button>
+            <div class="mic-caption" id="micCaption">Your voice captures lived experiences.</div>
+            <div class="mic-help" id="micHelp">Record your post-visit summary after the appointment ends.</div>
+          </div>
+          <button class="cta green" id="recCta" onclick="nextScreen()" style="margin-top:14px;">Verify this with MIA <svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        </div>
+
+        <!-- SCREEN 4: MIA REVIEW -->
+        <div class="screen" data-screen="3">
+          <span class="pill"><span class="dot"></span>Step 04 · MIA Review</span>
+          <h1 id="reviewTitle">Here's what's<br><em>missing.</em></h1>
+          <p class="lead" id="reviewSub">2 of 7 milestones need a quick note before this record is state-ready.</p>
+          <div class="transcript">
+            <div class="th">Transcript · Amara Johnson</div>
+            <div class="tb">"…Visit began 10:02 AM. Rebozo sifting and counter-pressure performed. Client reported mild discomfort at 10:45. Concluded 12:10 PM…"</div>
+          </div>
+          <div class="card-a" style="padding:6px 18px;">
+            <div class="milestone"><div class="ms-icon ok"><svg class="ico ico-stroke" width="13" height="13" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div><div class="ms-body"><div class="ms-title">Date &amp; client confirmed</div></div></div>
+            <div class="milestone"><div class="ms-icon ok"><svg class="ico ico-stroke" width="13" height="13" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div><div class="ms-body"><div class="ms-title">Start &amp; end time logged</div></div></div>
+            <div class="milestone"><div class="ms-icon ok"><svg class="ico ico-stroke" width="13" height="13" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div><div class="ms-body"><div class="ms-title">Services described</div></div></div>
+            <div class="milestone" id="ms-client"><div class="ms-icon err"><svg class="ico ico-stroke" width="13" height="13" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></div><div class="ms-body"><div class="ms-title">Client's response noted</div><div class="ms-hint">Mention how your client felt — her words, her energy, her response.</div><button class="fix-btn" onclick="fixMilestone('ms-client')"><svg class="ico ico-stroke" width="12" height="12" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>Add Note &amp; Fix</button></div></div>
+            <div class="milestone" id="ms-needs"><div class="ms-icon err"><svg class="ico ico-stroke" width="13" height="13" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></div><div class="ms-body"><div class="ms-title">New needs identified</div><div class="ms-hint">Note any emerging needs or referrals flagged during the visit.</div><button class="fix-btn" onclick="fixMilestone('ms-needs')"><svg class="ico ico-stroke" width="12" height="12" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>Add Note &amp; Fix</button></div></div>
+            <div class="milestone"><div class="ms-icon pend"><svg class="ico ico-stroke" width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2 2"/></svg></div><div class="ms-body"><div class="ms-title">Signature ready</div></div><span class="ms-badge">Pending</span></div>
+            <div class="milestone"><div class="ms-icon ok"><svg class="ico ico-stroke" width="13" height="13" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div><div class="ms-body"><div class="ms-title">Provider ID on record</div></div></div>
+          </div>
+          <button class="cta" id="reviewCta" disabled style="margin-top:14px;">Fix 2 items to continue</button>
+        </div>
+
+        <!-- SCREEN 5: SIGN-OFF -->
+        <div class="screen" data-screen="4">
+          <span class="pill"><span class="dot"></span>Step 05 · Final</span>
+          <h1>Record <em>complete.</em></h1>
+          <p class="lead">Sign to authenticate and export your state-ready compliance record.</p>
+          <div class="ready-chip">
+            <div class="rci"><svg class="ico ico-stroke" width="20" height="20" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+            <div><div class="rt">7 / 7 Milestones Cleared</div><div class="rs">Amara Johnson · #101 · T1032 · State-ready</div></div>
+          </div>
+          <div class="sigpad">
+            <div class="sl"><span class="lbl">Sign to authenticate</span><span class="clr" onclick="clearSig()">Clear</span></div>
+            <canvas class="sig-canvas" id="sigCanvas"></canvas>
+          </div>
+          <div class="checklist">
+            <div class="check-item"><span class="cb"><svg class="ico ico-stroke" width="12" height="12" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>HIPAA-encrypted storage</div>
+            <div class="check-item"><span class="cb"><svg class="ico ico-stroke" width="12" height="12" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>State billing ready</div>
+            <div class="check-item"><span class="cb"><svg class="ico ico-stroke" width="12" height="12" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>State-compliant format</div>
+            <div class="check-item off" id="sigCheck"><span class="cb"><svg class="ico ico-stroke" width="12" height="12" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>Doula signature</div>
+          </div>
+          <div id="signoffForm">
+            <button class="cta" id="genBtn" disabled onclick="generatePdf(this)">
+              <svg class="ico ico-stroke" width="17" height="17" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+              Sign above to unlock export
+            </button>
+          </div>
+          <div id="signoffSuccess" style="display:none;text-align:center;">
+            <div style="width:66px;height:66px;border-radius:50%;background:rgba(74,124,111,0.14);color:var(--green);display:flex;align-items:center;justify-content:center;margin:10px auto 16px;"><svg class="ico ico-stroke" width="32" height="32" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <h1 style="text-align:center;">Signed record<br><em>exported.</em></h1>
+            <p class="lead" style="text-align:center;">Amara Johnson · #101 · PDF sealed &amp; encrypted · State-ready.</p>
+            <div class="checklist" style="text-align:left;">
+              <div class="check-item"><span class="cb"><svg class="ico ico-stroke" width="12" height="12" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>PDF generated &amp; signed</div>
+              <div class="check-item"><span class="cb"><svg class="ico ico-stroke" width="12" height="12" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>Encrypted vault upload</div>
+              <div class="check-item"><span class="cb"><svg class="ico ico-stroke" width="12" height="12" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>Billing queue ready</div>
+              <div class="check-item"><span class="cb"><svg class="ico ico-stroke" width="12" height="12" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>State submission ready</div>
+            </div>
+            <div class="banner-plum" style="text-align:left;"><div class="bb"><b>This visit is 100% audit-proof.</b> Now you can export.</div></div>
+          </div>
+          <div class="pdi-foot" style="margin-top:14px;">Powered by PDI · Perinatal Documentation Integrity</div>
+        </div>
+
+        <div class="demo-nav" id="demoNav">
+          <button class="on" onclick="goScreen(0,this)">Welcome</button>
+          <button onclick="goScreen(1,this)">Setup</button>
+          <button onclick="goScreen(2,this)">Record</button>
+          <button onclick="goScreen(3,this)">Review</button>
+          <button onclick="goScreen(4,this)">Sign-Off</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SURFACE B: ORG DASHBOARD ===================== -->
+<section class="surface" id="surface-org">
+  <div class="surface-intro">
+    <h2>The organization <em>dashboard</em>.</h2>
+    <p>The desktop view agencies and state partners use to manage doulas, clear records before billing, and export state-ready claims — rebuilt in the PDI design system.</p>
+  </div>
+  <div class="dash">
+    <div class="dash-shell">
+      <!-- sidebar -->
+      <aside class="sidebar">
+        <div class="sb-brand"><span class="role">Perinatal Documentation Integrity</span><span class="mia">MIA</span></div>
+        <div class="sb-org"><div class="on">Sunflower Birth Collective</div><div class="od">Admin · Tulsa, OK</div></div>
+        <nav class="sb-nav">
+          <button class="on" onclick="orgTab('overview',this)"><span class="ni"><svg class="ico ico-stroke" width="17" height="17" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></span>Overview</button>
+          <button onclick="orgTab('roster',this)"><span class="ni"><svg class="ico ico-stroke" width="17" height="17" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/></svg></span>Doula Roster</button>
+          <button onclick="orgTab('queue',this)"><span class="ni"><svg class="ico ico-stroke" width="17" height="17" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></span>Approval Queue<span class="badge">4</span></button>
+          <button onclick="orgTab('billing',this)"><span class="ni"><svg class="ico ico-stroke" width="17" height="17" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>Billing Export</button>
+          <button onclick="orgTab('alerts',this)"><span class="ni"><svg class="ico ico-stroke" width="17" height="17" viewBox="0 0 24 24"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></span>Alerts</button>
+        </nav>
+        <div class="sb-foot">Powered by PDI<br>Perinatal Documentation Integrity</div>
+      </aside>
+      <!-- main -->
+      <div class="main">
+        <div class="topbar">
+          <div><div class="tt" id="orgTitle">Overview</div><div class="td">Tuesday, April 14, 2026</div></div>
+          <div class="topbar-right">
+            <div class="alert-chip"><svg class="ico ico-stroke" width="15" height="15" viewBox="0 0 24 24"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Alerts<span class="badge">2</span></div>
+            <div class="avatar">D</div>
+          </div>
+        </div>
+        <div class="panel-body">
+
+          <!-- OVERVIEW -->
+          <div class="dtab show" data-otab="overview">
+            <div class="stat-grid">
+              <div class="stat-card"><div class="sct"><span class="sci"><svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>Active Doulas</div><div class="scn">6</div><div class="scs">1 under review</div></div>
+              <div class="stat-card"><div class="sct"><span class="sci"><svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>Visits This Month</div><div class="scn">17</div><div class="scs">48 in March</div></div>
+              <div class="stat-card"><div class="sct"><span class="sci"><svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></span>Compliance Rate</div><div class="scn">88%</div><div class="scs up">&#9650; 4% from last month</div></div>
+              <div class="stat-card"><div class="sct"><span class="sci"><svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2 2"/></svg></span>Pending Approval</div><div class="scn">4</div><div class="scs">Needs review today</div></div>
+              <div class="stat-card"><div class="sct"><span class="sci"><svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>Billing Ready</div><div class="scn">$5.1K</div><div class="scs">April · 17 visits</div></div>
+            </div>
+            <div class="grid-2">
+              <div class="panel">
+                <h3>Compliance by Doula</h3>
+                <div class="psub">Milestone clearance rate · April 2026</div>
+                <div class="comp-row"><div class="comp-av">TW</div><div class="comp-name">Tamara W.</div><div class="comp-visits">14v</div><div class="comp-bar"><div class="comp-fill" style="width:97%;background:var(--green)"></div></div><div class="comp-pct">97%</div></div>
+                <div class="comp-row"><div class="comp-av">KN</div><div class="comp-name">Kezia N.</div><div class="comp-visits">9v</div><div class="comp-bar"><div class="comp-fill" style="width:88%;background:var(--green-light)"></div></div><div class="comp-pct">88%</div></div>
+                <div class="comp-row"><div class="comp-av">AJ</div><div class="comp-name">Amara J.</div><div class="comp-visits">21v</div><div class="comp-bar"><div class="comp-fill" style="width:100%;background:var(--green)"></div></div><div class="comp-pct">100%</div></div>
+                <div class="comp-row"><div class="comp-av">SM</div><div class="comp-name">Sofia M.</div><div class="comp-visits">7v</div><div class="comp-bar"><div class="comp-fill" style="width:71%;background:var(--amber)"></div></div><div class="comp-pct">71%</div></div>
+                <div class="comp-row"><div class="comp-av">DC</div><div class="comp-name">Destiny C.</div><div class="comp-visits">11v</div><div class="comp-bar"><div class="comp-fill" style="width:91%;background:var(--green-light)"></div></div><div class="comp-pct">91%</div></div>
+                <div class="comp-row"><div class="comp-av">IO</div><div class="comp-name">Imani O.</div><div class="comp-visits">5v</div><div class="comp-bar"><div class="comp-fill" style="width:80%;background:var(--amber)"></div></div><div class="comp-pct">80%</div></div>
+              </div>
+              <div class="panel">
+                <h3>MIA Alerts</h3>
+                <div class="psub">Pattern detection across all doulas</div>
+                <div class="alert-row"><div class="alert-ico warn"><svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></div><div><div class="alert-txt">Sofia M. has 3 records with missing milestones this month — pattern detected.</div><div class="alert-time">2h ago · Action needed</div></div></div>
+                <div class="alert-row"><div class="alert-ico info"><svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg></div><div><div class="alert-txt">April billing window closes in 6 days. 17 visits ready for export.</div><div class="alert-time">5h ago · Info</div></div></div>
+                <div class="alert-row"><div class="alert-ico ok"><svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div><div><div class="alert-txt">Amara J. achieved 100% compliance for the 3rd consecutive month.</div><div class="alert-time">1d ago · No action</div></div></div>
+                <div class="alert-row"><div class="alert-ico warn"><svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></div><div><div class="alert-txt">Imani O. has had no visits logged in 10 days — check in?</div><div class="alert-time">2d ago · Action needed</div></div></div>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="panel">
+                <h3>April Visit Breakdown</h3>
+                <div class="psub">17 visits by type</div>
+                <div class="vbreak">
+                  <div class="vbar-row"><div class="vbar-label"><span class="vi"><svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><path d="M12 22c0-6 0-10 5-13"/><path d="M17 9c2-2 2-5 2-5s-3 0-5 2-2 5-2 5 3 0 5-2z"/></svg></span>Prenatal</div><div class="vbar-track"><div class="vbar-fill" style="width:88%;">8</div></div></div>
+                  <div class="vbar-row"><div class="vbar-label"><span class="vi"><svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.5 2.3 7.1-6.3-4.6-6.3 4.6L7.9 14 2 9.4h7.6z"/></svg></span>Birth</div><div class="vbar-track"><div class="vbar-fill" style="width:56%;">5</div></div></div>
+                  <div class="vbar-row"><div class="vbar-label"><span class="vi"><svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 9c0-3 2-5 2-5s2 2 0 5M12 15c0 3-2 5-2 5s-2-2 0-5M15 12c3 0 5 2 5 2s-2 2-5 0M9 12c-3 0-5-2-5-2s2-2 5 0"/></svg></span>Postpartum</div><div class="vbar-track"><div class="vbar-fill" style="width:45%;">4</div></div></div>
+                </div>
+              </div>
+              <div class="panel" style="display:flex;flex-direction:column;justify-content:center;">
+                <div class="code-block">
+                  <div class="cbl">Billing Code</div>
+                  <div class="cbn">T1032</div>
+                  <div class="cbd">All visit types · Doula Services<br>National standard · $300 / visit</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ROSTER -->
+          <div class="dtab" data-otab="roster">
+            <div class="section-head">
+              <div><h3>Doula Roster</h3><div class="sh-sub">6 providers · 5 active · 1 under review</div></div>
+              <button class="btn-sm btn-plum">+ Add Doula</button>
+            </div>
+            <div class="panel" style="padding:0;overflow:hidden;">
+              <table class="dtable">
+                <thead><tr><th>Doula</th><th>Specialty</th><th>Visits</th><th>Compliance</th><th>Pending</th><th>Status</th><th>Last Visit</th></tr></thead>
+                <tbody id="rosterBody">
+                  <tr><td><div class="cell-name">Tamara Williams</div><div class="cell-sub">NPI 1234&bull;&bull;&bull;&bull;90</div></td><td>Birth &amp; Prenatal</td><td>14</td><td>97%</td><td><span class="pill-tag pill-clear">Clear</span></td><td><span class="statusdot"><span class="sd sd-active"></span>Active</span></td><td>Apr 7</td></tr>
+                  <tr><td><div class="cell-name">Kezia Nwosu</div><div class="cell-sub">NPI 2345&bull;&bull;&bull;&bull;01</div></td><td>Postpartum</td><td>9</td><td>88%</td><td><span class="pill-tag pill-pending">2 pending</span></td><td><span class="statusdot"><span class="sd sd-active"></span>Active</span></td><td>Apr 6</td></tr>
+                  <tr><td><div class="cell-name">Amara Johnson</div><div class="cell-sub">NPI 3456&bull;&bull;&bull;&bull;12</div></td><td>Full Spectrum</td><td>21</td><td>100%</td><td><span class="pill-tag pill-clear">Clear</span></td><td><span class="statusdot"><span class="sd sd-active"></span>Active</span></td><td>Apr 8</td></tr>
+                  <tr><td><div class="cell-name">Sofia Martinez</div><div class="cell-sub">NPI 4567&bull;&bull;&bull;&bull;23</div></td><td>Prenatal &amp; Birth</td><td>7</td><td>71%</td><td><span class="pill-tag pill-pending">3 pending</span></td><td><span class="statusdot"><span class="sd sd-review"></span>Review</span></td><td>Apr 5</td></tr>
+                  <tr><td><div class="cell-name">Destiny Clarke</div><div class="cell-sub">NPI 5678&bull;&bull;&bull;&bull;34</div></td><td>Birth</td><td>11</td><td>91%</td><td><span class="pill-tag pill-pending">1 pending</span></td><td><span class="statusdot"><span class="sd sd-active"></span>Active</span></td><td>Apr 7</td></tr>
+                  <tr><td><div class="cell-name">Imani Osei</div><div class="cell-sub">NPI 6789&bull;&bull;&bull;&bull;45</div></td><td>Postpartum</td><td>5</td><td>80%</td><td><span class="pill-tag pill-clear">Clear</span></td><td><span class="statusdot"><span class="sd sd-inactive"></span>Inactive</span></td><td>Mar 29</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- QUEUE -->
+          <div class="dtab" data-otab="queue">
+            <div class="section-head">
+              <div><h3>Supervisor Approval Queue</h3><div class="sh-sub">4 records awaiting review · 2 with compliance issues</div></div>
+              <span class="mini-badge">Review before billing</span>
+            </div>
+            <div id="queueExportBanner" style="display:none;align-items:center;gap:14px;background:rgba(74,124,111,0.1);border:1px solid rgba(74,124,111,0.3);border-radius:10px;padding:13px 18px;margin-bottom:16px;">
+              <svg class="ico ico-stroke" width="18" height="18" viewBox="0 0 24 24" style="color:var(--green)"><path d="M20 6L9 17l-5-5"/></svg>
+              <span id="queueExportCount" style="font-size:13.5px;font-weight:600;color:var(--green);flex:1;"></span>
+              <button class="btn-sm" style="background:var(--green);color:#fff;" onclick="addToExport(this)">Add to Export</button>
+            </div>
+            <div class="queue-card flagged">
+              <div class="queue-top"><span class="vid-chip">V-1041</span><span class="queue-who">Kezia Nwosu <span>&rarr; Brielle H.</span></span><span class="mini-badge">Postpartum</span><span class="mini-badge">Apr 6</span><span class="mini-badge">72 min</span><span class="mini-badge issue">1 issue</span></div>
+              <div class="flag-strip"><svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>MIA flagged: Missing new needs</div>
+              <div class="queue-actions"><button class="btn-sm btn-out" onclick="resolveQueue(this,'flag')">Flag</button><button class="btn-sm btn-plum" onclick="resolveQueue(this,'approve')">Approve</button></div>
+            </div>
+            <div class="queue-card flagged">
+              <div class="queue-top"><span class="vid-chip">V-1039</span><span class="queue-who">Sofia Martinez <span>&rarr; Camille R.</span></span><span class="mini-badge">Prenatal</span><span class="mini-badge">Apr 5</span><span class="mini-badge">65 min</span><span class="mini-badge issue">2 issues</span></div>
+              <div class="flag-strip"><svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>MIA flagged: Member response + signature</div>
+              <div class="queue-actions"><button class="btn-sm btn-out" onclick="resolveQueue(this,'flag')">Flag</button><button class="btn-sm btn-plum" onclick="resolveQueue(this,'approve')">Approve</button></div>
+            </div>
+            <div class="queue-card flagged">
+              <div class="queue-top"><span class="vid-chip">V-1038</span><span class="queue-who">Sofia Martinez <span>&rarr; Yolanda B.</span></span><span class="mini-badge">Birth</span><span class="mini-badge">Apr 5</span><span class="mini-badge">8h 14m</span><span class="mini-badge issue">1 issue</span></div>
+              <div class="flag-strip"><svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>MIA flagged: Missing client response</div>
+              <div class="queue-actions"><button class="btn-sm btn-out" onclick="resolveQueue(this,'flag')">Flag</button><button class="btn-sm btn-plum" onclick="resolveQueue(this,'approve')">Approve</button></div>
+            </div>
+            <div class="queue-card">
+              <div class="queue-top"><span class="vid-chip">V-1036</span><span class="queue-who">Destiny Clarke <span>&rarr; Rosa N.</span></span><span class="mini-badge">Prenatal</span><span class="mini-badge">Apr 7</span><span class="mini-badge">61 min</span><span class="pill-tag pill-clear">No issues</span></div>
+              <div class="queue-actions"><button class="btn-sm btn-out" onclick="resolveQueue(this,'flag')">Flag</button><button class="btn-sm btn-plum" onclick="resolveQueue(this,'approve')">Approve</button></div>
+            </div>
+          </div>
+
+          <!-- BILLING -->
+          <div class="dtab" data-otab="billing">
+            <div class="section-head">
+              <div><h3>Billing Export</h3><div class="sh-sub">T1032 · All visits pre-scrubbed by MIA · State-ready format</div></div>
+            </div>
+            <div class="billing-current">
+              <div>
+                <div class="bcl">Current Billing Period</div>
+                <div class="bcp">April 2026</div>
+                <div class="bcm">17 visits · 6 doulas · Closes in 6 days</div>
+                <div class="billing-bar"><div class="bbl"><span>Claims compliance</span><span>88% · 15 of 17 ready</span></div><div class="bbt"><div class="bbf" style="width:88%;"></div></div></div>
+                <div class="bcm" style="margin-top:8px;">2 records pending supervisor approval — approve to include in export.</div>
+              </div>
+              <div style="text-align:right;">
+                <div class="bcbig">$5,100</div>
+                <button class="btn-sm" style="background:var(--green);color:#fff;margin-top:12px;" onclick="exportBilling(this)"><svg class="ico ico-stroke" width="15" height="15" viewBox="0 0 24 24" style="margin-right:6px;vertical-align:-2px;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>Export for State Billing</button>
+              </div>
+            </div>
+            <div class="panel" style="padding:0;overflow:hidden;">
+              <table class="dtable">
+                <thead><tr><th>Period</th><th>Doulas</th><th>Visits</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                  <tr><td class="cell-name">March 2026</td><td>6</td><td>48</td><td>$14,400</td><td><span class="pill-tag pill-clear">Exported</span></td><td><a style="color:var(--green);font-weight:600;font-size:12.5px;cursor:pointer;">Re-export</a></td></tr>
+                  <tr><td class="cell-name">February 2026</td><td>6</td><td>41</td><td>$12,300</td><td><span class="pill-tag pill-clear">Exported</span></td><td><a style="color:var(--green);font-weight:600;font-size:12.5px;cursor:pointer;">Re-export</a></td></tr>
+                  <tr><td class="cell-name">January 2026</td><td>5</td><td>35</td><td>$10,500</td><td><span class="pill-tag pill-clear">Exported</span></td><td><a style="color:var(--green);font-weight:600;font-size:12.5px;cursor:pointer;">Re-export</a></td></tr>
+                  <tr><td class="cell-name">April 2026</td><td>6</td><td>17</td><td>$5,100</td><td><span class="pill-tag pill-pending">In Progress</span></td><td>&mdash;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ALERTS -->
+          <div class="dtab" data-otab="alerts">
+            <div class="section-head">
+              <div><h3>MIA Alert Feed</h3><div class="sh-sub">Pattern detection across all doulas · Updated in real time</div></div>
+            </div>
+            <div class="panel">
+              <div class="alert-row"><div class="alert-ico warn"><svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></div><div style="flex:1;"><div class="alert-txt">Sofia M. has 3 records with missing milestones this month — pattern detected.</div><div class="alert-time">2h ago · Action needed</div></div><button class="btn-sm btn-out" style="align-self:center;" onclick="this.textContent='Reviewed';this.disabled=true;this.style.opacity='0.6';">Review</button></div>
+              <div class="alert-row"><div class="alert-ico info"><svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg></div><div><div class="alert-txt">April billing window closes in 6 days. 17 visits ready for export.</div><div class="alert-time">5h ago · Info</div></div></div>
+              <div class="alert-row"><div class="alert-ico ok"><svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div><div><div class="alert-txt">Amara J. achieved 100% compliance for the 3rd consecutive month.</div><div class="alert-time">1d ago · No action</div></div></div>
+              <div class="alert-row"><div class="alert-ico warn"><svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></div><div style="flex:1;"><div class="alert-txt">Imani O. has had no visits logged in 10 days — check in?</div><div class="alert-time">2d ago · Action needed</div></div><button class="btn-sm btn-out" style="align-self:center;" onclick="this.textContent='Reviewed';this.disabled=true;this.style.opacity='0.6';">Review</button></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SURFACE C: MCO VIEW ===================== -->
+<section class="surface" id="surface-mco">
+  <div class="surface-intro">
+    <h2>What the <em>payer</em> sees, coming from PDI.</h2>
+    <p>A new view: the network-level window an MCO or Medicaid partner would receive — de-identified verification, claims-readiness, outcomes, and compliance posture. By design, this view carries no PHI; it shows aggregated, provider-signed evidence, not a patient record archive.</p>
+  </div>
+  <div class="dash">
+    <div class="dash-shell">
+      <!-- sidebar -->
+      <aside class="sidebar">
+        <div class="sb-brand"><span class="role">Perinatal Documentation Integrity</span><span class="mia">MIA</span></div>
+        <div class="sb-org"><div class="on">Sample Health Plan</div><div class="od">Managed Care · Oklahoma Network</div></div>
+        <nav class="sb-nav">
+          <button class="on" onclick="mcoTab('readiness',this)"><span class="ni"><svg class="ico ico-stroke" width="17" height="17" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></span>Claims Readiness</button>
+          <button onclick="mcoTab('outcomes',this)"><span class="ni"><svg class="ico ico-stroke" width="17" height="17" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span>Outcomes &amp; Quality</button>
+          <button onclick="mcoTab('network',this)"><span class="ni"><svg class="ico ico-stroke" width="17" height="17" viewBox="0 0 24 24"><path d="M12 21s-7-5.2-7-11a7 7 0 0114 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>Network Coverage</button>
+          <button onclick="mcoTab('audit',this)"><span class="ni"><svg class="ico ico-stroke" width="17" height="17" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></span>Compliance &amp; Audit</button>
+        </nav>
+        <div class="sb-foot">Powered by PDI<br>PHI-safe by design</div>
+      </aside>
+      <!-- main -->
+      <div class="main">
+        <div class="topbar">
+          <div><div class="tt" id="mcoTitle">Claims Readiness</div><div class="td">Reporting period · April 2026</div></div>
+          <div class="topbar-right">
+            <span class="sample-note"><svg class="ico ico-stroke" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>Sample data — illustrative</span>
+          </div>
+        </div>
+        <div class="panel-body">
+
+          <!-- CLAIMS READINESS -->
+          <div class="dtab show" data-mtab="readiness">
+            <div class="mco-banner">
+              <div class="mbi"><svg class="ico ico-stroke" width="24" height="24" viewBox="0 0 24 24" style="color:#fff"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+              <div><div class="mbt">Provider-signed, payer-compliant records — never PHI.</div><div class="mbd">Every record below was reviewed and authorized by the care provider before submission. MIA does not retain protected health information after session completion. What you see is claims evidence, de-identified at the network level.</div></div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-card"><div class="sct">Records Submitted</div><div class="scn">142</div><div class="scs">April 2026 period</div></div>
+              <div class="stat-card"><div class="sct">Claims-Ready Rate</div><div class="scn">96%</div><div class="scs up">&#9650; Signed &amp; milestone-cleared</div></div>
+              <div class="stat-card"><div class="sct">Provider Sign-Off</div><div class="scn">100%</div><div class="scs">No unreviewed output</div></div>
+              <div class="stat-card"><div class="sct">Avg Visit Duration</div><div class="scn">71<span style="font-size:14px;"> min</span></div><div class="scs up">Above 60-min standard</div></div>
+              <div class="stat-card"><div class="sct">Billable Value</div><div class="scn">$42.6K</div><div class="scs">142 visits · T1032</div></div>
+            </div>
+            <div class="grid-2">
+              <div class="panel">
+                <h3>Submission readiness funnel</h3>
+                <div class="psub">How records move from visit to clean claim</div>
+                <div class="vbreak">
+                  <div class="vbar-row"><div class="vbar-label" style="width:150px;">Visits documented</div><div class="vbar-track"><div class="vbar-fill" style="width:100%;">148</div></div></div>
+                  <div class="vbar-row"><div class="vbar-label" style="width:150px;">Milestones cleared</div><div class="vbar-track"><div class="vbar-fill" style="width:96%;">142</div></div></div>
+                  <div class="vbar-row"><div class="vbar-label" style="width:150px;">Provider-signed</div><div class="vbar-track"><div class="vbar-fill" style="width:96%;">142</div></div></div>
+                  <div class="vbar-row"><div class="vbar-label" style="width:150px;">Submitted to plan</div><div class="vbar-track"><div class="vbar-fill" style="width:92%;">136</div></div></div>
+                </div>
+                <div style="font-size:12px;color:var(--muted);margin-top:14px;line-height:1.6;">6 records returned to supervisor for correction before submission — never reaching the claims workflow incomplete.</div>
+              </div>
+              <div class="panel">
+                <h3>Records by status</h3>
+                <div class="psub">Network-level, de-identified</div>
+                <div class="comp-row"><span class="pill-tag pill-clear" style="width:96px;">Clean claim</span><div class="comp-bar" style="margin:0 12px;"><div class="comp-fill" style="width:92%;background:var(--green)"></div></div><div class="comp-pct">136</div></div>
+                <div class="comp-row"><span class="pill-tag pill-pending" style="width:96px;">In plan review</span><div class="comp-bar" style="margin:0 12px;"><div class="comp-fill" style="width:30%;background:var(--lavender)"></div></div><div class="comp-pct">4</div></div>
+                <div class="comp-row"><span class="pill-tag" style="width:96px;background:var(--amber-bg);color:var(--amber);">Returned</span><div class="comp-bar" style="margin:0 12px;"><div class="comp-fill" style="width:6%;background:var(--amber)"></div></div><div class="comp-pct">2</div></div>
+                <div class="code-block" style="margin-top:18px;">
+                  <div class="cbl">Standard billing code</div>
+                  <div class="cbn">T1032</div>
+                  <div class="cbd">Doula Services · CMS Community Health Worker guidance · state Medicaid doula program format</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- OUTCOMES -->
+          <div class="dtab" data-mtab="outcomes">
+            <div class="mco-banner" style="background:linear-gradient(135deg,var(--plum-light) 0%,var(--plum) 100%);">
+              <div class="mbi"><svg class="ico ico-stroke" width="24" height="24" viewBox="0 0 24 24" style="color:#fff"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div>
+              <div><div class="mbt">The outcomes layer — co-developed with partners.</div><div class="mbd">These categories illustrate the structure of the de-identified outcomes reporting MIA is built to surface. Actual measures and benchmarks are defined together with each MCO and Medicaid partner. No figure here is a clinical claim.</div></div>
+            </div>
+            <div class="grid-2b">
+              <div class="panel">
+                <h3>Documentation quality signals</h3>
+                <div class="psub">Share of visits with each element captured · illustrative</div>
+                <div class="outcome-row"><div class="outcome-label">Visits meeting 60-min standard</div><div class="outcome-bar"><div class="outcome-fill" style="width:94%;"></div></div><div class="outcome-val">94%</div></div>
+                <div class="outcome-row"><div class="outcome-label">Client response documented</div><div class="outcome-bar"><div class="outcome-fill" style="width:91%;"></div></div><div class="outcome-val">91%</div></div>
+                <div class="outcome-row"><div class="outcome-label">Emerging needs / referrals noted</div><div class="outcome-bar"><div class="outcome-fill" style="width:78%;"></div></div><div class="outcome-val">78%</div></div>
+                <div class="outcome-row"><div class="outcome-label">Provider ID on record</div><div class="outcome-bar"><div class="outcome-fill" style="width:99%;"></div></div><div class="outcome-val">99%</div></div>
+              </div>
+              <div class="panel">
+                <h3>Care continuity signals</h3>
+                <div class="psub">De-identified, aggregated across network · illustrative</div>
+                <div class="outcome-row"><div class="outcome-label">Members with 2+ documented visits</div><div class="outcome-bar"><div class="outcome-fill" style="width:82%;"></div></div><div class="outcome-val">82%</div></div>
+                <div class="outcome-row"><div class="outcome-label">Prenatal visits with follow-up logged</div><div class="outcome-bar"><div class="outcome-fill" style="width:73%;"></div></div><div class="outcome-val">73%</div></div>
+                <div class="outcome-row"><div class="outcome-label">Postpartum visit within 6 weeks</div><div class="outcome-bar"><div class="outcome-fill" style="width:68%;"></div></div><div class="outcome-val">68%</div></div>
+                <div class="outcome-row"><div class="outcome-label">Referral to community resource noted</div><div class="outcome-bar"><div class="outcome-fill" style="width:54%;"></div></div><div class="outcome-val">54%</div></div>
+              </div>
+            </div>
+            <div class="panel" style="margin-top:18px;">
+              <h3>Visit volume by type</h3>
+              <div class="psub">April 2026 · 142 documented visits</div>
+              <div class="vbreak">
+                <div class="vbar-row"><div class="vbar-label">Prenatal</div><div class="vbar-track"><div class="vbar-fill" style="width:90%;">68</div></div></div>
+                <div class="vbar-row"><div class="vbar-label">Birth</div><div class="vbar-track"><div class="vbar-fill" style="width:55%;">39</div></div></div>
+                <div class="vbar-row"><div class="vbar-label">Postpartum</div><div class="vbar-track"><div class="vbar-fill" style="width:48%;">35</div></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- NETWORK -->
+          <div class="dtab" data-mtab="network">
+            <div class="section-head">
+              <div><h3>Network Coverage</h3><div class="sh-sub">Community perinatal workforce in-network · de-identified provider IDs</div></div>
+              <span class="sample-note"><svg class="ico ico-stroke" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>Sample network</span>
+            </div>
+            <div class="coverage-grid" style="margin-bottom:20px;">
+              <div class="cov-card"><div class="cvr"><svg class="ico ico-stroke" width="15" height="15" viewBox="0 0 24 24" style="color:var(--green)"><path d="M12 21s-7-5.2-7-11a7 7 0 0114 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Tulsa Metro</div><div class="cvn">11</div><div class="cvl">doulas · 58 visits</div></div>
+              <div class="cov-card"><div class="cvr"><svg class="ico ico-stroke" width="15" height="15" viewBox="0 0 24 24" style="color:var(--green)"><path d="M12 21s-7-5.2-7-11a7 7 0 0114 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Oklahoma City</div><div class="cvn">9</div><div class="cvl">doulas · 47 visits</div></div>
+              <div class="cov-card"><div class="cvr"><svg class="ico ico-stroke" width="15" height="15" viewBox="0 0 24 24" style="color:var(--green)"><path d="M12 21s-7-5.2-7-11a7 7 0 0114 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>NE Rural</div><div class="cvn">5</div><div class="cvl">doulas · 22 visits</div></div>
+              <div class="cov-card"><div class="cvr"><svg class="ico ico-stroke" width="15" height="15" viewBox="0 0 24 24" style="color:var(--green)"><path d="M12 21s-7-5.2-7-11a7 7 0 0114 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>SW Rural</div><div class="cvn">3</div><div class="cvl">doulas · 15 visits</div></div>
+            </div>
+            <div class="panel" style="padding:0;overflow:hidden;">
+              <table class="dtable">
+                <thead><tr><th>Provider</th><th>Region</th><th>Visits</th><th>Avg Duration</th><th>Doc Compliance</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td><div class="cell-name">Provider 0142</div><div class="cell-sub">Taxonomy 374J00000X</div></td><td>Tulsa Metro</td><td>21</td><td>74 min</td><td>100%</td><td><span class="statusdot"><span class="sd sd-active"></span>In-network</span></td></tr>
+                  <tr><td><div class="cell-name">Provider 0118</div><div class="cell-sub">Taxonomy 374J00000X</div></td><td>Tulsa Metro</td><td>14</td><td>69 min</td><td>97%</td><td><span class="statusdot"><span class="sd sd-active"></span>In-network</span></td></tr>
+                  <tr><td><div class="cell-name">Provider 0207</div><div class="cell-sub">Taxonomy 374J00000X</div></td><td>Oklahoma City</td><td>11</td><td>72 min</td><td>91%</td><td><span class="statusdot"><span class="sd sd-active"></span>In-network</span></td></tr>
+                  <tr><td><div class="cell-name">Provider 0231</div><div class="cell-sub">Taxonomy 374J00000X</div></td><td>Oklahoma City</td><td>9</td><td>66 min</td><td>88%</td><td><span class="statusdot"><span class="sd sd-active"></span>In-network</span></td></tr>
+                  <tr><td><div class="cell-name">Provider 0188</div><div class="cell-sub">Taxonomy 374J00000X</div></td><td>NE Rural</td><td>7</td><td>71 min</td><td>86%</td><td><span class="statusdot"><span class="sd sd-review"></span>Onboarding</span></td></tr>
+                  <tr><td><div class="cell-name">Provider 0260</div><div class="cell-sub">Taxonomy 374J00000X</div></td><td>SW Rural</td><td>5</td><td>63 min</td><td>80%</td><td><span class="statusdot"><span class="sd sd-review"></span>Onboarding</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- AUDIT -->
+          <div class="dtab" data-mtab="audit">
+            <div class="section-head">
+              <div><h3>Compliance &amp; Audit Posture</h3><div class="sh-sub">How records are protected, standardized, and made interoperable</div></div>
+            </div>
+            <div class="panel">
+              <div class="audit-item">
+                <div class="audit-ico"><svg class="ico ico-stroke" width="18" height="18" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div>
+                <div class="audit-body"><h4>PHI-safe by design</h4><p>MIA processes but does not retain PHI after session completion. The network view holds de-identified, aggregated evidence only. BAA available upon request.</p></div>
+                <div class="audit-status">Active</div>
+              </div>
+              <div class="audit-item">
+                <div class="audit-ico"><svg class="ico ico-stroke" width="18" height="18" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></div>
+                <div class="audit-body"><h4>Provider-signed before submission</h4><p>Every record is reviewed and authorized by the care provider before it reaches a payer. No unreviewed output enters the claims workflow.</p></div>
+                <div class="audit-status">Enforced</div>
+              </div>
+              <div class="audit-item">
+                <div class="audit-ico"><svg class="ico ico-stroke" width="18" height="18" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+                <div class="audit-body"><h4>Built to billing standards</h4><p>Documentation follows CMS Community Health Worker guidance and state Medicaid doula program requirements — formatted for submission from the start.</p></div>
+                <div class="audit-status">Aligned</div>
+              </div>
+              <div class="audit-item">
+                <div class="audit-ico"><svg class="ico ico-stroke" width="18" height="18" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 013 3v6.5"/></svg></div>
+                <div class="audit-body"><h4>Interoperable output</h4><p>Structured data designed to map to FHIR standards, enabling clean handoffs to EHRs, health-system workflows, and outcomes reporting layers.</p></div>
+                <div class="audit-status">FHIR-mappable</div>
+              </div>
+              <div class="audit-item">
+                <div class="audit-ico"><svg class="ico ico-stroke" width="18" height="18" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg></div>
+                <div class="audit-body"><h4>Encrypted storage &amp; audit trail</h4><p>Records are encrypted at rest and carry a timestamped milestone-clearance and sign-off history — every submitted claim is traceable and audit-ready.</p></div>
+                <div class="audit-status">Active</div>
+              </div>
+            </div>
+            <div class="mco-banner" style="margin-top:20px;background:linear-gradient(135deg,var(--plum) 0%,var(--plum-dark) 100%);">
+              <div class="mbi"><svg class="ico ico-stroke" width="24" height="24" viewBox="0 0 24 24" style="color:#fff"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+              <div><div class="mbt">Co-develop the outcomes layer with PDI.</div><div class="mbd">PDI is in active pilot with Oklahoma birth-worker organizations and is seeking a small number of MCO and health-system partners to define the measures that matter most to your members.</div></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function showSurface(name, btn){
+  document.querySelectorAll('.surface').forEach(s=>s.classList.remove('active'));
+  document.getElementById('surface-'+name).classList.add('active');
+  document.querySelectorAll('.switcher-tab').forEach(t=>t.classList.toggle('active', t.dataset.surface===name));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+/* front door */
+function revealPicker(){
+  const p=document.getElementById('picker'); p.classList.add('show');
+  p.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function launchView(name){ showSurface(name); }
+
+/* ---- Org dashboard tabs ---- */
+const ORG_TITLES = {overview:'Overview', roster:'Doula Roster', queue:'Approval Queue', billing:'Billing Export', alerts:'Alerts'};
+function orgTab(name, btn){
+  document.querySelectorAll('#surface-org .dtab').forEach(t=>t.classList.remove('show'));
+  document.querySelector('#surface-org .dtab[data-otab="'+name+'"]').classList.add('show');
+  document.querySelectorAll('#surface-org .sb-nav button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('orgTitle').textContent = ORG_TITLES[name];
+}
+/* ---- MCO tabs ---- */
+const MCO_TITLES = {readiness:'Claims Readiness', outcomes:'Outcomes & Quality', network:'Network Coverage', audit:'Compliance & Audit'};
+function mcoTab(name, btn){
+  document.querySelectorAll('#surface-mco .dtab').forEach(t=>t.classList.remove('show'));
+  document.querySelector('#surface-mco .dtab[data-mtab="'+name+'"]').classList.add('show');
+  document.querySelectorAll('#surface-mco .sb-nav button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('mcoTitle').textContent = MCO_TITLES[name];
+}
+
+/* ---- Doula app flow ---- */
+let curScreen = 0;
+const TOTAL = 5;
+function renderProgress(){
+  const pb = document.getElementById('progressBar');
+  let segs = '';
+  for(let i=0;i<TOTAL;i++){ segs += '<div class="progress-seg'+(i<=curScreen?' on':'')+'"></div>'; }
+  pb.innerHTML = segs + '<span class="progress-label">'+(curScreen+1)+'/'+TOTAL+'</span>';
+}
+function applyDark(){
+  document.getElementById('phoneInner').classList.toggle('dark', curScreen===2);
+}
+function goScreen(n, btn){
+  curScreen = n;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('show'));
+  document.querySelector('.screen[data-screen="'+n+'"]').classList.add('show');
+  document.querySelectorAll('#demoNav button').forEach(b=>b.classList.remove('on'));
+  if(btn){ btn.classList.add('on'); }
+  else { document.querySelectorAll('#demoNav button')[n].classList.add('on'); }
+  renderProgress(); applyDark();
+  if(n===4){ setTimeout(initSig, 40); }
+}
+function nextScreen(){ if(curScreen<TOTAL-1) goScreen(curScreen+1); }
+function prevScreen(){ if(curScreen>0) goScreen(curScreen-1); }
+
+function setOnline(on, btn){
+  document.querySelectorAll('.toggle-online button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('micZone').style.display = on ? 'block':'none';
+  document.getElementById('offlineTimes').style.display = on ? 'none':'block';
+  document.getElementById('recHelper').textContent = on
+    ? 'Visit timestamps are captured automatically when you arrive and depart.'
+    : "No connection? Enter the visit times manually — they'll sync when you're back online.";
+}
+let recState='idle';
+function toggleMic(){
+  const btn=document.getElementById('micBtn'), cap=document.getElementById('micCaption'), help=document.getElementById('micHelp');
+  if(recState==='idle'){ recState='recording'; btn.classList.add('recording'); cap.textContent='Speak freely — MIA is listening.'; help.textContent='Tap again to stop and finish your summary.'; }
+  else if(recState==='recording'){ recState='stopped'; btn.classList.remove('recording'); cap.textContent='Summary captured.'; help.textContent='Continue when you are ready.'; }
+  else { recState='idle'; cap.textContent='Your voice captures lived experiences.'; help.textContent='Record your post-visit summary after the appointment ends.'; }
+}
+
+/* NPI validation */
+function checkNpi(el){
+  el.value = el.value.replace(/[^0-9]/g,'').slice(0,10);
+  const v=document.getElementById('npiValid');
+  if(el.value.length===10){ v.style.color='var(--green)'; v.innerHTML='<svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Looks good.'; }
+  else { v.style.color='var(--amber)'; v.innerHTML='<svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Enter 10 digits ('+el.value.length+'/10).'; }
+}
+
+/* signature pad — initialized when the Sign-Off step is visible (canvas has real size) */
+function markSigned(){
+  document.getElementById('sigCheck').classList.remove('off');
+  const g=document.getElementById('genBtn');
+  if(g && g.disabled){ g.disabled=false; g.innerHTML='<svg class="ico ico-stroke" width="17" height="17" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg> Generate Signed Compliance PDF'; }
+}
+function initSig(){
+  const c=document.getElementById('sigCanvas'); if(!c) return;
+  const r=c.getBoundingClientRect(); if(r.width===0) return; // not visible yet — retry on screen show
+  const dpr=window.devicePixelRatio||1;
+  c.width=r.width*dpr; c.height=r.height*dpr;
+  const ctx=c.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.strokeStyle='#3D1C5C'; ctx.lineWidth=2.2; ctx.lineCap='round'; ctx.lineJoin='round';
+  if(c.dataset.bound) return; c.dataset.bound='1';
+  let drawing=false;
+  const pos=e=>{const rr=c.getBoundingClientRect(); const t=e.touches?e.touches[0]:e; return [t.clientX-rr.left, t.clientY-rr.top];};
+  const start=e=>{drawing=true; const[x,y]=pos(e); ctx.beginPath(); ctx.moveTo(x,y); markSigned(); e.preventDefault();};
+  const move=e=>{if(!drawing)return; const[x,y]=pos(e); ctx.lineTo(x,y); ctx.stroke(); e.preventDefault();};
+  const end=()=>{ drawing=false; };
+  c.addEventListener('mousedown',start); c.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+  c.addEventListener('touchstart',start,{passive:false}); c.addEventListener('touchmove',move,{passive:false}); c.addEventListener('touchend',end);
+}
+function clearSig(){
+  const c=document.getElementById('sigCanvas'); if(c){ const ctx=c.getContext('2d'); ctx.clearRect(0,0,c.width,c.height); }
+  document.getElementById('sigCheck').classList.add('off');
+  const g=document.getElementById('genBtn'); if(g){ g.disabled=true; g.innerHTML='<svg class="ico ico-stroke" width="17" height="17" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg> Sign above to unlock export'; }
+}
+function generatePdf(btn){
+  btn.textContent='Generating PDF…'; btn.disabled=true;
+  setTimeout(()=>{ document.getElementById('signoffForm').style.display='none'; document.getElementById('signoffSuccess').style.display='block'; },1300);
+}
+
+/* visit type selection */
+function pickSeg(el){ el.parentNode.querySelectorAll('.seg-opt').forEach(o=>o.classList.remove('on')); el.classList.add('on'); }
+
+/* fixable milestones */
+let remaining = 2;
+function fixMilestone(id){
+  const m=document.getElementById(id); if(!m || m.dataset.fixed) return; m.dataset.fixed='1';
+  const ic=m.querySelector('.ms-icon'); ic.className='ms-icon ok'; ic.innerHTML='<svg class="ico ico-stroke" width="13" height="13" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>';
+  const hint=m.querySelector('.ms-hint'); if(hint) hint.remove();
+  const fb=m.querySelector('.fix-btn'); if(fb) fb.remove();
+  const done=document.createElement('span'); done.className='ms-badge'; done.style.color='var(--green)'; done.style.background='rgba(74,124,111,0.12)'; done.textContent='Added'; m.appendChild(done);
+  remaining--; updateReviewCta();
+}
+function updateReviewCta(){
+  const cta=document.getElementById('reviewCta');
+  if(remaining>0){ cta.textContent='Fix '+remaining+' item'+(remaining>1?'s':'')+' to continue'; cta.disabled=true; cta.onclick=null; }
+  else {
+    cta.innerHTML='Continue to Sign-Off <svg class="ico ico-stroke" width="16" height="16" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    cta.disabled=false; cta.onclick=nextScreen;
+    document.getElementById('reviewTitle').innerHTML="Here's what<br>you <em>have.</em>";
+    document.getElementById('reviewSub').textContent='All 7 milestones cleared. This record is ready to sign.';
+  }
+}
+
+/* ---- Org: approval queue ---- */
+let approvedCount = 0;
+function resolveQueue(btn, action){
+  const card=btn.closest('.queue-card'); const actions=card.querySelector('.queue-actions');
+  if(action==='approve'){
+    actions.outerHTML='<div class="flag-strip" style="background:rgba(74,124,111,0.1);color:var(--green);margin-top:12px;margin-bottom:0;"><svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Approved · ready for billing export</div>';
+    card.style.borderLeftColor='var(--green)';
+    approvedCount++; showQueueBanner();
+  } else {
+    actions.outerHTML='<div class="flag-strip"><svg class="ico ico-stroke" width="14" height="14" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>Flagged for correction · returned to doula</div>';
+    card.style.borderLeftColor='var(--amber)';
+  }
+}
+function showQueueBanner(){
+  const b=document.getElementById('queueExportBanner'); b.style.display='flex';
+  document.getElementById('queueExportCount').textContent=approvedCount+' record'+(approvedCount>1?'s':'')+' approved · ready to add to billing export';
+}
+function addToExport(btn){ btn.textContent='Added to April export'; btn.disabled=true; btn.style.opacity='0.7'; }
+
+/* ---- Org: billing export ---- */
+function exportBilling(btn){
+  btn.innerHTML='Generating…'; btn.disabled=true;
+  setTimeout(()=>{ btn.innerHTML='<svg class="ico ico-stroke" width="15" height="15" viewBox="0 0 24 24" style="margin-right:6px;vertical-align:-2px;"><path d="M20 6L9 17l-5-5"/></svg>Exported to State Portal'; },1300);
+}
+
+/* ---- Org: roster expandable rows ---- */
+function initRoster(){
+  const body=document.getElementById('rosterBody'); if(!body) return;
+  body.querySelectorAll('tr').forEach(row=>{
+    row.style.cursor='pointer';
+    row.addEventListener('click',()=>toggleRoster(row));
+  });
+}
+function toggleRoster(row){
+  if(row.nextElementSibling && row.nextElementSibling.classList.contains('roster-detail')){ row.nextElementSibling.remove(); return; }
+  document.querySelectorAll('.roster-detail').forEach(d=>d.remove());
+  const c=row.children; const name=c[0].querySelector('.cell-name').textContent; const npi=c[0].querySelector('.cell-sub').textContent;
+  const spec=c[1].textContent, visits=c[2].textContent, comp=c[3].textContent, pend=c[4].textContent.trim(), last=c[6].textContent;
+  const tr=document.createElement('tr'); tr.className='roster-detail';
+  tr.innerHTML='<td colspan="7" style="background:var(--cream);padding:18px 20px;"><div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;"><div class="comp-av" style="width:40px;height:40px;font-size:14px;">'+name.split(' ').map(w=>w[0]).join('')+'</div><div><div class="cell-name" style="font-size:15px;">'+name+'</div><div class="cell-sub">'+npi+' · 374J00000X · '+spec+'</div></div><div style="margin-left:auto;display:flex;gap:9px;"><button class="btn-sm btn-out">View Records</button><button class="btn-sm btn-plum">Message</button></div></div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;"><div class="cov-card"><div class="cvl">Total Visits</div><div class="cvn">'+visits+'</div></div><div class="cov-card"><div class="cvl">Compliance</div><div class="cvn">'+comp+'</div></div><div class="cov-card"><div class="cvl">Pending</div><div class="cvn">'+pend+'</div></div><div class="cov-card"><div class="cvl">Last Visit</div><div class="cvn" style="font-size:18px;">'+last+'</div></div></div></td>';
+  row.after(tr);
+}
+
+window.addEventListener('load', ()=>{ renderProgress(); initSig(); initRoster(); });
+</script>
+</body>
+</html>
