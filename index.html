@@ -416,6 +416,55 @@ body { font-family: 'DM Sans', sans-serif; background: #EFE9F2; color: var(--ink
   .switcher-note { display: none; }
   .stat-grid { grid-template-columns: 1fr 1fr; }
 }
+/* ============ MOBILE ============ */
+@media (max-width: 768px) {
+  .switcher { padding: 10px 14px; gap: 10px; }
+  .switcher-brand { flex: 1; }
+  .switcher-tabs { width: 100%; order: 3; overflow-x: auto; -webkit-overflow-scrolling: touch; justify-content: flex-start; }
+  .switcher-tabs::-webkit-scrollbar { display: none; }
+  .switcher-tab { padding: 8px 13px; font-size: 12px; white-space: nowrap; flex: 0 0 auto; }
+
+  .surface-intro { padding: 26px 18px 6px; }
+  .surface-intro h2 { font-size: 24px; }
+
+  .home-hero { padding: 26px 18px 14px; }
+  .home-copy h1 { font-size: 30px; }
+  .picker { padding: 8px 16px 56px; }
+
+  .phone-stage { padding: 16px 8px 44px; }
+  .phone { width: 100%; max-width: 380px; }
+
+  .dash { padding: 8px; }
+  .topbar { padding: 14px 16px; }
+  .panel-body { padding: 16px 14px; }
+  .billing-current { grid-template-columns: 1fr; }
+  .section-head { flex-direction: column; align-items: flex-start; gap: 10px; }
+  /* wide tables scroll instead of breaking */
+  .panel { overflow-x: auto !important; }
+  .dtable { min-width: 580px; }
+}
+@media (max-width: 440px) {
+  .stat-grid { grid-template-columns: 1fr; }
+  .home-copy h1 { font-size: 26px; }
+  .home-actions { width: 100%; }
+  .btn-lg, .btn-lg-ghost { width: 100%; justify-content: center; }
+  .surface-intro h2 { font-size: 22px; }
+  .switcher-brand .mia { font-size: 24px; }
+}
+/* tables -> stacked cards on phones (no horizontal scrolling) */
+@media (max-width: 640px) {
+  .panel { overflow-x: visible !important; }
+  .dtable, .dtable tbody, .dtable tr, .dtable td { display: block; width: auto; }
+  .dtable thead { display: none; }
+  .dtable { min-width: 0 !important; padding: 10px; }
+  .dtable tr { background: var(--white); border: 1px solid var(--rule); border-radius: 10px; margin-bottom: 10px; padding: 4px 14px; }
+  .dtable tbody tr:hover { background: var(--white); }
+  .dtable td { border: none; border-bottom: 1px solid var(--rule); padding: 9px 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; text-align: right; }
+  .dtable tr td:last-child { border-bottom: none; }
+  .dtable td::before { content: attr(data-label); font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-align: left; flex: 0 0 auto; }
+  .roster-detail td { display: block; }
+  .roster-detail [style*="repeat(4"] { grid-template-columns: 1fr 1fr !important; }
+}
 </style>
 </head>
 <body>
@@ -1262,7 +1311,18 @@ function toggleRoster(row){
   row.after(tr);
 }
 
-window.addEventListener('load', ()=>{ renderProgress(); initSig(); initRoster(); });
+/* label table cells so they read well as stacked cards on mobile */
+function makeResponsiveTables(){
+  document.querySelectorAll('.dtable').forEach(tbl=>{
+    const heads=[...tbl.querySelectorAll('thead th')].map(th=>th.textContent.trim());
+    tbl.querySelectorAll('tbody tr').forEach(tr=>{
+      const cells=tr.children;
+      if(cells.length!==heads.length) return;
+      [...cells].forEach((td,i)=>{ if(heads[i]) td.setAttribute('data-label', heads[i]); });
+    });
+  });
+}
+window.addEventListener('load', ()=>{ renderProgress(); initSig(); initRoster(); makeResponsiveTables(); });
 </script>
 </body>
 </html>
